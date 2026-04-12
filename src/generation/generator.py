@@ -178,7 +178,7 @@ class TextGenerator:
         """
         # TODO: Get top-k values and indices
         # STUDENT TODO: Use torch.topk to get top-k values
-        top_k_values, top_k_indices = None, None  # STUDENT TODO
+        top_k_values, top_k_indices = torch.topk(logits, top_k, dim=-1)  # STUDENT TODO
 
         # TODO: Create mask for top-k tokens
         # STUDENT TODO: Set all logits to -inf, then restore top-k values
