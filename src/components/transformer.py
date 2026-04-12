@@ -300,9 +300,9 @@ class TransformerDecoderLayer(nn.Module):
         else:  # post-norm
             # Post-norm: Masked self-attention
             # TODO: Apply masked self-attention with post-norm
-            attn_output, _ = None, None  # STUDENT TODO
-            x = None  # STUDENT TODO (residual)
-            x = None  # STUDENT TODO (normalize)
+            attn_output, _ = self.self_attention(x, x, x, self_attn_mask)  # STUDENT TODO
+            x = x + self.dropout(attn_output)  # STUDENT TODO (residual)
+            x = self.norm1(x)  # STUDENT TODO (normalize)
 
             # Post-norm: Cross-attention (if enabled)
             if self.use_cross_attention and encoder_output is not None:
@@ -313,9 +313,9 @@ class TransformerDecoderLayer(nn.Module):
 
             # Post-norm: Feed-forward
             # TODO: Apply FFN with post-norm
-            ffn_output = None  # STUDENT TODO
-            x = None  # STUDENT TODO (residual)
-            x = None  # STUDENT TODO (normalize)
+            ffn_output = self.ffn(x)  # STUDENT TODO
+            x = x + self.dropout(ffn_output)  # STUDENT TODO (residual)
+            x = self.norm3(x)  # STUDENT TODO (normalize)
 
         return x
 
