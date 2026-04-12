@@ -214,7 +214,7 @@ class TransformerDecoderLayer(nn.Module):
 
         # TODO: Create self-attention mechanism (same as encoder)
         if attention_type == "mha":
-            self.self_attention = None  # STUDENT TODO
+            self.self_attention = MultiHeadAttention(d_model, num_heads, dropout)  # STUDENT TODO
         elif attention_type == "gqa":
             if num_kv_heads is None:
                 num_kv_heads = num_heads // 2
@@ -230,12 +230,12 @@ class TransformerDecoderLayer(nn.Module):
                 self.cross_attention = None  # STUDENT TODO
 
         # TODO: Create feed-forward network
-        self.ffn = None  # STUDENT TODO
+        self.ffn = create_ffn(ffn_type=ffn_type,d_model=d_model, d_ff=d_ff, dropout=dropout, activation=activation)  # STUDENT TODO
 
         # TODO: Create normalization layers
         # We need 2 or 3 norm layers depending on whether we use cross-attention
         if norm_type == "layernorm":
-            self.norm1 = None  # STUDENT TODO (for self-attention)
+            self.norm1 = LayerNorm(d_model)  # STUDENT TODO (for self-attention)
             if use_cross_attention:
                 self.norm2 = None  # STUDENT TODO (for cross-attention)
             self.norm3 = None  # STUDENT TODO (for FFN)
@@ -243,7 +243,7 @@ class TransformerDecoderLayer(nn.Module):
             self.norm1 = None  # STUDENT TODO
             if use_cross_attention:
                 self.norm2 = None  # STUDENT TODO
-            self.norm3 = None  # STUDENT TODO
+            self.norm3 = LayerNorm(d_model)  # STUDENT TODO
         else:
             raise ValueError(f"Unknown norm_type: {norm_type}")
 
@@ -272,15 +272,15 @@ class TransformerDecoderLayer(nn.Module):
         # TODO: Create causal mask if not provided
         # Hint: Use create_causal_mask(x.size(1), x.device)
         if self_attn_mask is None:
-            self_attn_mask = None  # STUDENT TODO
+            self_attn_mask = create_causal_mask(x.size(1), x.device)  # STUDENT TODO
 
         if self.norm_position == "pre":
             # Pre-norm: Masked self-attention
             # TODO: Apply masked self-attention with pre-norm
             # Same as encoder, but use self_attn_mask (causal mask)
-            normed = None  # STUDENT TODO
-            attn_output, _ = None, None  # STUDENT TODO
-            x = None  # STUDENT TODO (residual)
+            normed = self.norm1(x)  # STUDENT TODO
+            attn_output, _ = self.self_attention(normed, normed, normed, self_attn_mask)  # STUDENT TODO
+            x = x + self.dropout(attn_output)  # STUDENT TODO (residual)
 
             # Pre-norm: Cross-attention (if enabled)
             if self.use_cross_attention and encoder_output is not None:
@@ -293,9 +293,9 @@ class TransformerDecoderLayer(nn.Module):
 
             # Pre-norm: Feed-forward
             # TODO: Apply FFN with pre-norm
-            normed = None  # STUDENT TODO
-            ffn_output = None  # STUDENT TODO
-            x = None  # STUDENT TODO (residual)
+            normed = self.norm3(x)  # STUDENT TODO
+            ffn_output = self.ffn(normed)  # STUDENT TODO
+            x = x + self.dropout(ffn_output)  # STUDENT TODO (residual)
 
         else:  # post-norm
             # Post-norm: Masked self-attention
