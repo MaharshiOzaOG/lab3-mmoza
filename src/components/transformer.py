@@ -238,12 +238,12 @@ class TransformerDecoderLayer(nn.Module):
             self.norm1 = LayerNorm(d_model)  # STUDENT TODO (for self-attention)
             if use_cross_attention:
                 self.norm2 = None  # STUDENT TODO (for cross-attention)
-            self.norm3 = None  # STUDENT TODO (for FFN)
+            self.norm3 = LayerNorm(d_model)  # STUDENT TODO (for FFN)
         elif norm_type == "rmsnorm":
             self.norm1 = None  # STUDENT TODO
             if use_cross_attention:
                 self.norm2 = None  # STUDENT TODO
-            self.norm3 = LayerNorm(d_model)  # STUDENT TODO
+            self.norm3 = None  # STUDENT TODO
         else:
             raise ValueError(f"Unknown norm_type: {norm_type}")
 

@@ -55,12 +55,12 @@ class TransformerLanguageModel(nn.Module):
         # TODO: Create token embedding layer
         # This converts token IDs to dense vectors
         # Hint: Use nn.Embedding(config.vocab_size, config.d_model, padding_idx=config.pad_token_id)
-        self.token_embedding = None  # STUDENT TODO
+        self.token_embedding = nn.Embedding(config.vocab_size, config.d_model, padding_idx=config.pad_token_id)  # STUDENT TODO
 
         # TODO: Create positional encoding based on config
         # Hint: Check config.pos_encoding_type and create the appropriate module
         if config.pos_encoding_type == "sinusoidal":
-            self.pos_encoding = None  # STUDENT TODO
+            self.pos_encoding = SinusoidalPositionalEncoding(d_model=config.d_model, max_len=config.max_seq_len, dropout=config.dropout) # STUDENT TODO
         elif config.pos_encoding_type == "rope":
             # RoPE is applied in attention, so we just store it
             self.pos_encoding = None  # STUDENT TODO (use head_dim)
@@ -71,13 +71,29 @@ class TransformerLanguageModel(nn.Module):
 
         # TODO: Create stack of transformer decoder layers
         # Hint: Use nn.ModuleList with TransformerDecoderLayer for each layer
-        self.layers = None  # STUDENT TODO
+        self.layers = nn.ModuleList(
+                                    [
+                                        TransformerDecoderLayer(
+                                            d_model=config.d_model,
+                                            num_heads=config.num_heads,
+                                            d_ff=config.d_ff,
+                                            dropout=config.dropout,
+                                            activation=config.activation,
+                                            norm_type=config.norm_type,
+                                            norm_position=config.norm_position,
+                                            attention_type=config.attention_type,
+                                            num_kv_heads=config.num_kv_heads,
+                                            ffn_type=config.ffn_type,
+                                            use_cross_attention=False,
+                                        )
+                                        for _ in range(config.num_layers)
+                                    ])  # STUDENT TODO
 
         # TODO: Create final layer normalization
         # Hint: Use LayerNorm or RMSNorm based on config.norm_type
         if config.norm_type == "layernorm":
             from ..components import LayerNorm
-            self.final_norm = None  # STUDENT TODO
+            self.final_norm = LayerNorm(config.d_model)  # STUDENT TODO
         elif config.norm_type == "rmsnorm":
             from ..components import RMSNorm
             self.final_norm = None  # STUDENT TODO
@@ -85,14 +101,14 @@ class TransformerLanguageModel(nn.Module):
         # TODO: Create output projection layer (language modeling head)
         # This projects from d_model to vocab_size
         # Hint: Use nn.Linear(config.d_model, config.vocab_size, bias=False)
-        self.lm_head = None  # STUDENT TODO
+        self.lm_head = nn.Linear(config.d_model, config.vocab_size, bias=False)  # STUDENT TODO
 
         # TODO: Tie input and output embeddings if specified
         # This shares weights between token embedding and output projection
         # It reduces parameters and often improves performance
         if config.tie_word_embeddings:
             # STUDENT TODO: Set self.lm_head.weight = self.token_embedding.weight
-            pass
+            self.lm_head.weight = self.token_embedding.weight  # STUDENT TODO
 
         # Initialize weights
         self.apply(self._init_weights)
@@ -140,31 +156,31 @@ class TransformerLanguageModel(nn.Module):
         # TODO: Get token embeddings
         # Hint: self.token_embedding(input_ids)
         # Shape: (batch_size, seq_len, d_model)
-        x = None  # STUDENT TODO
+        x = self.token_embedding(input_ids) # STUDENT TODO
 
         # TODO: Apply positional encoding
         # The method depends on the type of positional encoding
         if self.config.pos_encoding_type in ["sinusoidal", "learned"]:
             # For sinusoidal and learned, we add the encoding to embeddings
             # Hint: x = self.pos_encoding(x)
-            x = None  # STUDENT TODO
+            x = self.pos_encoding(x)  # STUDENT TODO
         # For RoPE, we'll apply it inside the attention mechanism
 
         # TODO: Create causal mask for autoregressive generation
         # Hint: Use create_causal_mask(seq_len, input_ids.device)
-        causal_mask = None  # STUDENT TODO
+        causal_mask = create_causal_mask(seq_len, input_ids.device)  # STUDENT TODO
 
         # TODO: Combine causal mask with padding mask if provided
         if attention_mask is not None:
             # Create padding mask
             # Hint: Use create_padding_mask(input_ids, self.config.pad_token_id)
             # Or use the provided attention_mask
-            padding_mask = None  # STUDENT TODO
+            padding_mask = create_padding_mask(input_ids, self.config.pad_token_id)  # STUDENT TODO
 
             # Combine masks: both causal and padding must be satisfied
             # Hint: Use element-wise multiplication or logical AND
             # Shape: (batch_size, 1, seq_len, seq_len)
-            mask = None  # STUDENT TODO
+            mask = causal_mask * padding_mask  # STUDENT TODO
         else:
             mask = causal_mask
 
@@ -186,16 +202,16 @@ class TransformerLanguageModel(nn.Module):
 
             # TODO: Apply transformer layer
             # Hint: x = layer(x, self_attn_mask=mask)
-            x = None  # STUDENT TODO
+            x = layer(x, self_attn_mask=mask)  # STUDENT TODO
 
         # TODO: Apply final layer normalization
         # Hint: x = self.final_norm(x)
-        x = None  # STUDENT TODO
+        x = self.final_norm(x)  # STUDENT TODO
 
         # TODO: Project to vocabulary
         # Hint: logits = self.lm_head(x)
         # Shape: (batch_size, seq_len, vocab_size)
-        logits = None  # STUDENT TODO
+        logits = self.lm_head(x)  # STUDENT TODO
 
         return logits, hidden_states
 
