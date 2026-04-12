@@ -248,18 +248,24 @@ class TransformerLanguageModel(nn.Module):
             for _ in range(max_new_tokens):
                 # TODO: Get logits for the last token
                 # Hint: Forward pass, then take logits[:, -1, :]
-                logits, _ = None, None  # STUDENT TODO
-                logits = None  # STUDENT TODO (select last token)
+                logits, _ = self(generated)  # STUDENT TODO
+                logits = logits[:, -1, :]  # STUDENT TODO (select last token)
 
                 # TODO: Apply temperature
                 # Hint: logits = logits / temperature
-                logits = None  # STUDENT TODO
+                logits = logits / temperature  # STUDENT TODO
 
                 # TODO: Apply top-k filtering if specified
                 if top_k is not None:
                     # Keep only top k logits, set others to -inf
                     # Hint: Use torch.topk()
-                    pass  # STUDENT TODO
+                    top_k_values, _ = torch.topk(logits, top_k, dim=-1)
+                    min_top_k = top_k_values[:, -1].unsqueeze(-1)
+                    logits = torch.where(
+                                            logits < min_top_k,
+                                            torch.full_like(logits, float("-inf")),
+                                            logits,
+                                        )  # STUDENT TODO
 
                 # TODO: Apply top-p (nucleus) filtering if specified
                 if top_p is not None:
@@ -271,16 +277,16 @@ class TransformerLanguageModel(nn.Module):
                 if do_sample:
                     # Sample from the distribution
                     # Hint: Use F.softmax() and torch.multinomial()
-                    probs = None  # STUDENT TODO
-                    next_token = None  # STUDENT TODO
+                    probs = F.softmax(logits, dim=-1)  # STUDENT TODO
+                    next_token = torch.multinomial(probs, num_samples=1)  # STUDENT TODO
                 else:
                     # Greedy decoding: take the most likely token
                     # Hint: Use torch.argmax()
-                    next_token = None  # STUDENT TODO
+                    next_token = torch.argmax(logits, dim=-1, keepdim=True)  # STUDENT TODO
 
                 # TODO: Append next token to generated sequence
                 # Hint: Use torch.cat([generated, next_token.unsqueeze(-1)], dim=-1)
-                generated = None  # STUDENT TODO
+                generated = torch.cat([generated, next_token], dim=-1)  # STUDENT TODO
 
                 # TODO: Check for EOS token
                 # If all sequences have generated EOS, stop
