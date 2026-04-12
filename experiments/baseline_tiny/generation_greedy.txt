@@ -1,0 +1,33 @@
+================================================================================
+Text Generation
+================================================================================
+Device: cuda
+
+Loading tokenizer...
+Vocabulary size: 8192
+
+Loading model...
+Model parameters: 5,256,704
+Loaded from epoch 0, step 3017
+
+================================================================================
+Prompt: Once upon a time,
+================================================================================
+
+Sample 1:
+--------------------------------------------------------------------------------
+Once upon a time,. It had a big and a bunny.
+One day, the earsr the park up a big truck. The man was chimney splashes in the bird was very happy.
+
+
+
+One day, the pond and exclaimed, "Hello!"The bug so, "Let's€™s said, " cries." 
+
+The next day, " turtle, "Let's was worm." 
+
+When they made, Lily said it angry keep. He saw a, "Yes, you.
+--------------------------------------------------------------------------------
+
+================================================================================
+Generation complete!
+================================================================================

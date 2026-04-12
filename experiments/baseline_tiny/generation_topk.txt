@@ -1,0 +1,28 @@
+================================================================================
+Text Generation
+================================================================================
+Device: cuda
+
+Loading tokenizer...
+Vocabulary size: 8192
+
+Loading model...
+Model parameters: 5,256,704
+Loaded from epoch 0, step 3017
+
+================================================================================
+Prompt: Once upon a time,
+================================================================================
+
+Sample 1:
+--------------------------------------------------------------------------------
+Once upon a time,, there was a boy named Timmy. He loved to play with his dad and had a big, Timmy was very excited to the park. He was so he had to be fun. 
+
+
+One day, Tim's mom. He saw a big, he kept the day, but he was so he said, "I got to the end and tried to the park. He felt very sad and he said, "I don't wait to play with me!"
+Lily felt so happy.
+--------------------------------------------------------------------------------
+
+================================================================================
+Generation complete!
+================================================================================
