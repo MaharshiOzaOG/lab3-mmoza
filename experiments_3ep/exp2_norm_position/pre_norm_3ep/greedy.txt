@@ -1,0 +1,28 @@
+================================================================================
+Text Generation
+================================================================================
+Device: cuda
+
+Loading tokenizer...
+Vocabulary size: 8192
+
+Loading model...
+Model parameters: 5,256,704
+Loaded from epoch 2, step 9051
+
+================================================================================
+Prompt: Once upon a time,
+================================================================================
+
+Sample 1:
+--------------------------------------------------------------------------------
+Once upon a time, there was a grillil old lady. It was so many things that she buried. The Tweetie was wrong and shy. So maybe the chest wanted to dance. But the children and stepped closer.
+
+One day, the life came over to Why stories. He showed the doll was so much. But then themy flew away go home! It was ana meant. The old boy was too scared. They both didn't like the top and came to get land. 
+
+The other clothes
+--------------------------------------------------------------------------------
+
+================================================================================
+Generation complete!
+================================================================================

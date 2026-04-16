@@ -1,0 +1,28 @@
+================================================================================
+Text Generation
+================================================================================
+Device: cuda
+
+Loading tokenizer...
+Vocabulary size: 8192
+
+Loading model...
+Model parameters: 13,793,280
+Loaded from epoch 2, step 12066
+
+================================================================================
+Prompt: Once upon a time,
+================================================================================
+
+Sample 1:
+--------------------------------------------------------------------------------
+Once upon a time, in a big garden, there lived a little girl named Lily. She loved to play with her toys when Lily saw a little girl named Lily. "Mommy, we have a beautiful flowers!" said Lily. "You are you sad, Lily. You can play with me?" 
+
+Lily replied, "Sure, Lily. You're too small, you can't eat it." 
+
+Lily and Lily played on the ground. They had a lot of fun together. They all wanted to make her
+--------------------------------------------------------------------------------
+
+================================================================================
+Generation complete!
+================================================================================

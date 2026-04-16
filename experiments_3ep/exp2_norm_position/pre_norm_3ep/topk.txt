@@ -1,0 +1,28 @@
+================================================================================
+Text Generation
+================================================================================
+Device: cuda
+
+Loading tokenizer...
+Vocabulary size: 8192
+
+Loading model...
+Model parameters: 5,256,704
+Loaded from epoch 2, step 9051
+
+================================================================================
+Prompt: Once upon a time,
+================================================================================
+
+Sample 1:
+--------------------------------------------------------------------------------
+Once upon a time, named Lily loved to play outside. One day, Max saw a big garden that was very much. Max's mommy told him to make it. Lily's mommy and it was too.
+
+Lily's mommy was very sad and went to play with his friends. They couldn't have a big storm that it. It was the dog and made a big blue toy car and had never seen it. She was a yellow bird and he could not know what to do.
+
+"But when I
+--------------------------------------------------------------------------------
+
+================================================================================
+Generation complete!
+================================================================================

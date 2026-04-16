@@ -1,0 +1,1 @@
+python scripts/train_model.py --config configs/report_tiny_post_3ep.yaml

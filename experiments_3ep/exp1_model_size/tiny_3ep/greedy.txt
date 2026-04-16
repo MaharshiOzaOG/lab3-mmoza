@@ -1,0 +1,24 @@
+================================================================================
+Text Generation
+================================================================================
+Device: cuda
+
+Loading tokenizer...
+Vocabulary size: 8192
+
+Loading model...
+Model parameters: 5,256,704
+Loaded from epoch 2, step 9051
+
+================================================================================
+Prompt: Once upon a time,
+================================================================================
+
+Sample 1:
+--------------------------------------------------------------------------------
+Once upon a time,. She was very excited! bir was Tweet very responded. One day, she found a big bird that was a bird in. The bird appeared and it made the post until she wanted to play why ' noticed it. In the bird flew down. She played on some big surprise. The cloud's bird thought the bird would keep the day. She tried to stop. She was so she didn't tell. Then she didn't know whatThe old tree. She asked her bedroom and tried to help
+--------------------------------------------------------------------------------
+
+================================================================================
+Generation complete!
+================================================================================

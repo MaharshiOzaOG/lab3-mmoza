@@ -1,0 +1,26 @@
+================================================================================
+Text Generation
+================================================================================
+Device: cuda
+
+Loading tokenizer...
+Vocabulary size: 8192
+
+Loading model...
+Model parameters: 13,793,280
+Loaded from epoch 2, step 12066
+
+================================================================================
+Prompt: Once upon a time,
+================================================================================
+
+Sample 1:
+--------------------------------------------------------------------------------
+Once upon a time, waits, a boat went to a big and he saw a big fairy. It was very scared and peace with honey. He knew it had to eat it. He would make the horseantha all about it packing.
+
+One day, it was teased and he heard a loud noise. It said, "But I want to wave now?" The fairy said, 'Mom replied, "Yes, I can I'm too far and I can fix this bug on the talent of it." The fairy
+--------------------------------------------------------------------------------
+
+================================================================================
+Generation complete!
+================================================================================

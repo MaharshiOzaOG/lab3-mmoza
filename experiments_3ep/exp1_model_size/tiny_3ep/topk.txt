@@ -1,0 +1,28 @@
+================================================================================
+Text Generation
+================================================================================
+Device: cuda
+
+Loading tokenizer...
+Vocabulary size: 8192
+
+Loading model...
+Model parameters: 5,256,704
+Loaded from epoch 2, step 9051
+
+================================================================================
+Prompt: Once upon a time,
+================================================================================
+
+Sample 1:
+--------------------------------------------------------------------------------
+Once upon a time,. She was playing in a big, red ball that she loved to take it. One day, she went to the park to the park to the park. 
+
+The big fire was very excited and started to rest. She saw the park and asked the cat was a little girl. She was excited and had been so happy. 
+
+The little girl decided to go home and saw a little girl. She asked if she could play with the little girl. She was so happy and took her
+--------------------------------------------------------------------------------
+
+================================================================================
+Generation complete!
+================================================================================

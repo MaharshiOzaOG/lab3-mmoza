@@ -1,0 +1,32 @@
+================================================================================
+Text Generation
+================================================================================
+Device: cuda
+
+Loading tokenizer...
+Vocabulary size: 8192
+
+Loading model...
+Model parameters: 5,256,704
+Loaded from epoch 2, step 9051
+
+================================================================================
+Prompt: Once upon a time,
+================================================================================
+
+Sample 1:
+--------------------------------------------------------------------------------
+Once upon a time, came in her garden. One day, she saw a big red cat on the cat. She wanted to go on the cat, and she wanted to go to fly.
+
+"Can you?" asked.
+
+"Yes, what's okay?"
+
+"I'm sorry, I love to get the cat," the cat said. "No, I am the cat! I wanted to go!"
+
+They played together and started to run around the cat. They played together and made
+--------------------------------------------------------------------------------
+
+================================================================================
+Generation complete!
+================================================================================

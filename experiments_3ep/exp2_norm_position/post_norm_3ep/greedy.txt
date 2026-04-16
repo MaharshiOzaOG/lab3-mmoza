@@ -1,0 +1,30 @@
+================================================================================
+Text Generation
+================================================================================
+Device: cuda
+
+Loading tokenizer...
+Vocabulary size: 8192
+
+Loading model...
+Model parameters: 5,256,704
+Loaded from epoch 2, step 9051
+
+================================================================================
+Prompt: Once upon a time,
+================================================================================
+
+Sample 1:
+--------------------------------------------------------------------------------
+Once upon a time, was tryingJack named Jack. Jack loved to play outside and play outside in the forest. One day, Joe found a big hand in the park. Anna was very pretty holding eat Timmy and said to drink it was too.
+
+"Maybe you ask me us, I make this?" her dad asked each other kids.
+
+Then, Jack asked, "Yes, little mail?" She put some cookies that said, "Don't play hide- let's sad."
+
+Timmy soon realized
+--------------------------------------------------------------------------------
+
+================================================================================
+Generation complete!
+================================================================================
