@@ -1,16 +1,4 @@
 #!/usr/bin/env python3
-"""
-Standalone inference template for Moodle submission.
-
-Contract:
-1. This script must run from inside the packaged submission folder.
-2. It must accept the standard CLI arguments below.
-3. It must print exactly one JSON object to stdout.
-
-Students may change the model architecture however they want, as long as this
-script still loads the packaged weights and obeys the output schema.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -21,27 +9,27 @@ import time
 from pathlib import Path
 from typing import Any
 
-try:
-    import torch
-except ImportError:  # pragma: no cover
-    torch = None
-
+import torch
 
 PACKAGE_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(PACKAGE_DIR))
+
+from src.model.config import ModelConfig
+from src.model.language_model import TransformerLanguageModel
+from src.tokenizer.loading import load_tokenizer
 
 
 def maybe_set_seed(seed: int) -> None:
     random.seed(seed)
-    if torch is not None:
-        torch.manual_seed(seed)
-        if torch.cuda.is_available():
-            torch.cuda.manual_seed_all(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
 
 
 def resolve_device(device_arg: str) -> str:
     if device_arg != "auto":
         return device_arg
-    if torch is not None and torch.cuda.is_available():
+    if torch.cuda.is_available():
         return "cuda"
     return "cpu"
 
@@ -61,19 +49,51 @@ def total_artifact_size_bytes(paths: list[str | Path]) -> int:
     return total
 
 
-def load_runtime(device: str) -> dict[str, Any]:
-    """
-    STUDENT TODO:
-    Load your model, tokenizer, and any other runtime objects here.
+def maybe_strip_module_prefix(state_dict: dict) -> dict:
+    if not state_dict:
+        return state_dict
+    if all(key.startswith("module.") for key in state_dict.keys()):
+        return {key.removeprefix("module."): value for key, value in state_dict.items()}
+    return state_dict
 
-    Return a dict. Recommended keys:
-    - "model": loaded model object
-    - "tokenizer": tokenizer object or helper wrapper
-    - "submission_name": short display name
-    - "dtype": e.g. "float32", "bfloat16"
-    - "artifact_paths": list of packaged files to count for size metrics
-    """
-    raise NotImplementedError("Replace load_runtime() with your own packaged model loading code.")
+
+def load_runtime(device: str) -> dict[str, Any]:
+    tokenizer_path = PACKAGE_DIR / "tokenizer.json"
+    checkpoint_path = PACKAGE_DIR / "best_model.pt"
+    config_path = PACKAGE_DIR / "model_config.json"
+
+    tokenizer = load_tokenizer(str(tokenizer_path))
+    model_config = ModelConfig.load(str(config_path))
+
+    checkpoint = torch.load(checkpoint_path, map_location=device)
+
+    if "model_state_dict" in checkpoint:
+        state_dict = checkpoint["model_state_dict"]
+    elif "state_dict" in checkpoint:
+        state_dict = checkpoint["state_dict"]
+    else:
+        state_dict = checkpoint
+
+    state_dict = maybe_strip_module_prefix(state_dict)
+
+    model = TransformerLanguageModel(model_config)
+    model.load_state_dict(state_dict, strict=True)
+    model.to(device)
+    model.eval()
+
+    return {
+        "model": model,
+        "tokenizer": tokenizer,
+        "submission_name": "lab3_small_3ep_baseline",
+        "dtype": "float32",
+        "artifact_paths": [
+            "standalone_inference.py",
+            "best_model.pt",
+            "tokenizer.json",
+            "model_config.json",
+        ],
+        "device": device,
+    }
 
 
 def generate_with_runtime(
@@ -85,19 +105,48 @@ def generate_with_runtime(
     top_p: float,
     seed: int,
 ) -> dict[str, Any]:
-    """
-    STUDENT TODO:
-    Run generation and return a dict with at least:
-    - "generated_text": full text to display
-    - "response_text": continuation only
-    - "num_generated_tokens": integer token count for the continuation
+    maybe_set_seed(seed)
 
-    Optional keys:
-    - "parameter_count"
-    - "artifact_paths"
-    - "extra"  (any extra metadata you want to expose)
-    """
-    raise NotImplementedError("Replace generate_with_runtime() with your own generation code.")
+    model = runtime["model"]
+    tokenizer = runtime["tokenizer"]
+    device = runtime["device"]
+
+    input_ids_list = tokenizer.encode(prompt, add_special_tokens=True)
+    input_ids = torch.tensor([input_ids_list], dtype=torch.long, device=device)
+
+    top_k_arg = top_k if top_k > 0 else None
+    top_p_arg = top_p if top_p < 1.0 else None
+    do_sample = (temperature != 1.0) or (top_k_arg is not None) or (top_p_arg is not None)
+
+    with torch.no_grad():
+        generated = model.generate(
+            input_ids=input_ids,
+            max_new_tokens=max_new_tokens,
+            temperature=temperature,
+            top_k=top_k_arg,
+            top_p=top_p_arg,
+            do_sample=do_sample,
+        )
+
+    full_ids = generated[0].tolist()
+    response_ids = full_ids[len(input_ids_list):]
+
+    generated_text = tokenizer.decode(full_ids, skip_special_tokens=True)
+    response_text = tokenizer.decode(response_ids, skip_special_tokens=True)
+
+    return {
+        "generated_text": generated_text,
+        "response_text": response_text,
+        "num_generated_tokens": len(response_ids),
+        "parameter_count": count_parameters(model),
+        "artifact_paths": runtime["artifact_paths"],
+        "dtype": runtime.get("dtype", "float32"),
+        "extra": {
+            "checkpoint": "best_model.pt",
+            "tokenizer": "tokenizer.json",
+            "config": "model_config.json",
+        },
+    }
 
 
 def parse_args() -> argparse.Namespace:
@@ -109,12 +158,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--top_k", type=int, default=0, help="Top-k filtering (0 disables)")
     parser.add_argument("--top_p", type=float, default=1.0, help="Top-p filtering")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
-    parser.add_argument(
-        "--output_json",
-        type=str,
-        default=None,
-        help="Optional path to also save the JSON result",
-    )
+    parser.add_argument("--output_json", type=str, default=None, help="Optional path to also save the JSON result")
     return parser.parse_args()
 
 

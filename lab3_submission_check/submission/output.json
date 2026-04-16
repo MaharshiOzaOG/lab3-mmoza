@@ -1,0 +1,24 @@
+{
+  "submission_name": "lab3_small_3ep_baseline",
+  "prompt": "Once upon a time,",
+  "generated_text": "Once upon a time,, there was a little girl named Lily. She loved to play with her toys and run around the park. One day, she saw a big, scary dog named Max. Max wanted to play with it, but she didn't want to play with it.\n\nLily's mom saw him and asked, \"Can",
+  "response_text": ", there was a little girl named Lily. She loved to play with her toys and run around the park. One day, she saw a big, scary dog named Max. Max wanted to play with it, but she didn't want to play with it.\n\nLily's mom saw him and asked, \"Can",
+  "num_generated_tokens": 64,
+  "wall_time_sec": 0.5669141439975647,
+  "seconds_per_generated_token": 0.008858033499961948,
+  "tokens_per_second": 112.89187380069129,
+  "parameter_count": 13793280,
+  "artifact_size_bytes": 166991266,
+  "device": "cuda",
+  "dtype": "float32",
+  "max_new_tokens": 64,
+  "temperature": 1.0,
+  "top_k": 0,
+  "top_p": 1.0,
+  "seed": 42,
+  "extra": {
+    "checkpoint": "best_model.pt",
+    "tokenizer": "tokenizer.json",
+    "config": "model_config.json"
+  }
+}
