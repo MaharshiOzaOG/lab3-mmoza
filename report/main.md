@@ -178,7 +178,23 @@ There is a mismatch between:
 This highlights that metrics alone are not sufficient for evaluation.
 
 ---
+### Figures
 
+**Validation Loss Comparison (Pre-norm vs Post-norm)**
+
+![Validation Loss Pre vs Post Norm](figures/exp2_val_loss_prenorm_vs_postnorm.png)
+
+Post-norm achieves slightly lower validation loss compared to pre-norm, suggesting marginally better numerical performance under short training.
+
+---
+
+**Validation Accuracy Comparison (Pre-norm vs Post-norm)**
+
+![Validation Accuracy Pre vs Post Norm](figures/exp2_val_acc_prenorm_vs_postnorm.png)
+
+Post-norm shows slightly higher accuracy, although qualitative evaluation indicates pre-norm produces more stable text generation.
+
+---
 ### Conclusion
 
 Post-norm improves numerical performance under short training, but pre-norm provides more stable generation. Pre-norm is generally preferred for stability, especially in deeper or longer training setups.
