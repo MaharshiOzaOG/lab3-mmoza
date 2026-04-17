@@ -5,7 +5,7 @@ Focus on conceptual or methodological reasoning. Put full empirical detail in
 `report/main.md`.
 
 ## Q1
-
+In a decoder-only transformer, we need to apply a causal mask to satisfy the autoregressive condition that each position only attends to its past positions and not to its future. Specifically, this mask should be applied to the attention logits, not after the softmax. In the case of scaled dot-product attention, logits are calculated as `QK^T/(d k )` and converted to probabilities via a softmax. If masking is applied before the softmax (as implemented in ScaledDotProductAttention.forward where we use scores.masked_fill(mask == 0, -inf)) then for the masked positions we obtain − ∞, which becomes 0 when the softmax is applied and sums of the remaining probabilities are still 1 after renormalization. In other words, we get a valid probability distribution over attentions. If masking is applied after the softmax operation, then the sum of probabilities would not be 1 (or the scaled probability distribution). As in the baseline attention module (src/components/attention.py) and the causal attention module, we ensure masking is performed before the softmax operation.
 
 ## Q2
 The main difference between Multi-Head Attention (MHA) and Grouped Query Attention (GQA) is that the query and key value are set up. This makes it a trade-off between speed and flexibility. In standard MHA, each attention head has its own set of projections for Q, K, and V, which means that there are the same number of Q, K, and V heads. 
