@@ -131,8 +131,10 @@ Increasing model size improves both numerical performance and generation quality
 ### What Stayed Fixed
 
 - Model size (Tiny)
-- Dataset and tokenizer
-- Training setup (3 epochs)
+- Dataset (TinyStories 50k)
+- Tokenizer
+- Training setup (3 epochs, batch size, optimizer)
+- Sequence length (512)
 
 ---
 
@@ -151,40 +153,68 @@ Increasing model size improves both numerical performance and generation quality
 ### What Got Better
 
 Post-norm achieves:
-- Slightly lower validation loss
-- Slightly better accuracy
-- Faster improvement in early training
+- Lower validation loss (3.52 vs 3.63)
+- Lower perplexity (34.18 vs 38.21)
+- Higher accuracy (0.366 vs 0.348)
+- Faster improvement during early training
+
+This indicates that post-norm provides slightly better optimization behavior under short training conditions.
 
 ---
 
 ### What Got Worse / Trade-off
 
-- Generated outputs from post-norm show:
-  - Slightly less stable sentence structure
-  - Occasional incoherence
+- Both models still show instability due to limited training (3 epochs)
+- Generation quality is not fully aligned with metric improvements
 
-- Pre-norm outputs are:
-  - More consistent
-  - More stable across sentences
+From qualitative outputs:
+
+- **Pre-norm outputs show:**
+  - Higher instability
+  - Broken or malformed words (e.g., inconsistent token formation)
+  - Less coherent sentence flow
+    
+`Once upon a time, there was a grillil old lady. It was so many things that she buried. The Tweetie was wrong and shy. So maybe the chest wanted to dance. But the children and stepped closer.`
+
+`One day, the life came over to Why stories. He showed the doll was so much. But then themy flew away go home! It was ana meant. The old boy was too scared. They both didn't like the top and came to get land. `
+
+- **Post-norm outputs show:**
+  - Slightly improved sentence structure
+  - More consistent phrasing
+  - Better continuity, though still imperfect
+    
+`Once upon a time, was tryingJack named Jack. Jack loved to play outside and play outside in the forest. One day, Joe found a big hand in the park. Anna was very pretty holding eat Timmy and said to drink it was` `too.`
+
+`"Maybe you ask me us, I make this?" her dad asked each other kids.`
+
+`Then, Jack asked, "Yes, little mail?" She put some cookies that said, "Don't play hide- let's sad."`
+
+`Timmy soon realized`
+
+Overall, post-norm reduces some noise seen in pre-norm outputs, but neither configuration produces fully stable text at this training scale.
 
 ---
 
 ### Key Insight
 
-There is a mismatch between:
-- **Quantitative metrics (favor post-norm)**
-- **Qualitative outputs (favor pre-norm)**
+There is a **partial alignment between quantitative and qualitative results**:
 
-This highlights that metrics alone are not sufficient for evaluation.
+- **Quantitative metrics favor post-norm**
+- **Qualitative outputs also slightly favor post-norm**, but the improvement is modest
+
+This highlights that:
+- Small numerical improvements do not always translate into large perceptual gains
+- Short training regimes can limit visible qualitative differences
 
 ---
+
 ### Figures
 
 **Validation Loss Comparison (Pre-norm vs Post-norm)**
 
 ![Validation Loss Pre vs Post Norm](figures/exp2_val_loss_prenorm_vs_postnorm.png)
 
-Post-norm achieves slightly lower validation loss compared to pre-norm, suggesting marginally better numerical performance under short training.
+Post-norm achieves slightly lower validation loss compared to pre-norm, indicating improved optimization efficiency.
 
 ---
 
@@ -192,24 +222,26 @@ Post-norm achieves slightly lower validation loss compared to pre-norm, suggesti
 
 ![Validation Accuracy Pre vs Post Norm](figures/exp2_val_acc_prenorm_vs_postnorm.png)
 
-Post-norm shows slightly higher accuracy, although qualitative evaluation indicates pre-norm produces more stable text generation.
+Post-norm shows higher accuracy, consistent with improved training dynamics.
 
 ---
+
 ### Conclusion
 
-Post-norm improves numerical performance under short training, but pre-norm provides more stable generation. Pre-norm is generally preferred for stability, especially in deeper or longer training setups.
+Post-norm provides consistently better numerical performance under short training conditions and also shows slightly improved qualitative generation compared to pre-norm. However, both configurations remain limited by the small training budget (3 epochs), resulting in incomplete convergence and noticeable instability in generated text.
 
----
+Overall, post-norm is preferable in this setup due to its better optimization behavior and marginally improved output quality, although the difference is not large. For longer training or deeper models, pre-norm may still offer advantages in stability, but this is not strongly evident in the current experiment.
 
 ## Evidence and Metrics
 
-The experiments rely on:
+The experiments rely on a combination of quantitative and qualitative evaluation:
+
 - Training and validation loss
 - Perplexity
 - Accuracy and top-5 accuracy
-- Generated text samples (greedy and top-k)
+- Generated text samples (greedy and top-k decoding)
 
-Both quantitative and qualitative evidence are used to support conclusions.
+Quantitative metrics provide a consistent measure of model performance during training, while generated text samples offer insight into fluency, coherence, and stability. Using both types of evidence ensures that conclusions are not based solely on numerical improvements but also reflect actual model behavior.
 
 ---
 
@@ -221,12 +253,14 @@ Generation was evaluated using:
 
 ### Observations
 
-- Small model produces more coherent narratives
-- Tiny model struggles with fluency
-- Pre-norm outputs are more stable
-- Post-norm outputs show slight instability despite better metrics
+- The **small model** produces more coherent and structured narratives compared to the tiny model
+- The **tiny model** shows more instability, including repetition and inconsistent phrasing
+- In normalization comparison:
+  - **Pre-norm outputs** show higher instability and occasional malformed tokens
+  - **Post-norm outputs** show slightly improved sentence structure and flow, though still imperfect
+- Overall, improvements in metrics are reflected in generation quality, but the differences remain moderate due to limited training
 
-This demonstrates that generation quality must be evaluated alongside numerical metrics.
+This demonstrates that generation quality must be evaluated alongside numerical metrics, as small metric gains do not always lead to large perceptual improvements.
 
 ---
 
@@ -234,21 +268,22 @@ This demonstrates that generation quality must be evaluated alongside numerical 
 
 | Experiment | Benefit | Cost |
 |----------|--------|------|
-| Model Size | Better performance, better text quality | Higher compute and memory |
-| Norm Position | Slight metric improvement (post-norm) | Reduced qualitative stability |
+| Model Size | Better performance, improved generation quality | Higher compute cost and memory usage |
+| Norm Position | Slight improvement in metrics and structure (post-norm) | Limited qualitative gain under short training |
 
 ---
 
 ## Limitations and Next Steps
 
-- Only 3 epochs were used → models not fully converged
-- Limited number of generation samples
-- No multiple random seed runs
-- No exploration of other architectures (e.g., GQA, RoPE)
+- Only 3 epochs were used → models are not fully converged
+- Limited number of generation samples → results may not generalize across prompts
+- No multiple random seed runs → results may have variance
+- No exploration of additional architectural variations (e.g., GQA, RoPE)
 
 ### Future Improvements
 
-- Train for more epochs
-- Evaluate multiple prompts systematically
-- Test additional architectural variations
-- Include more rigorous statistical evaluation
+- Train for more epochs to observe stronger convergence trends
+- Evaluate generation across multiple prompts and samples
+- Compare models under longer training schedules
+- Explore additional architectural modifications (e.g., GQA, RoPE)
+- Include more rigorous statistical analysis (e.g., multiple runs with different seeds)
